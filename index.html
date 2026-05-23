@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cloudpivot-ecc · Rules & Skills 使用说明</title>
+    <style>
+      :root {
+        --bg: #f5f8ff;
+        --bg2: #eef4ff;
+        --card: #ffffff;
+        --text: #18243d;
+        --muted: #5e6b85;
+        --line: #dfe8ff;
+        --primary: #2f6bff;
+        --primary-soft: #eaf1ff;
+        --editor-bg: #1e1e1e;
+        --editor-bar: #2d2d2d;
+        --editor-text: #d4d4d4;
+        --editor-comment: #6a9955;
+        --editor-cmd: #4ec9b0;
+        --editor-flag: #9cdcfe;
+        --editor-path: #ce9178;
+        --editor-url: #569cd6;
+        --editor-pkg: #dcdcaa;
+      }
+      @keyframes riseIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(1200px 640px at -10% -20%, #dfeaff 0%, transparent 55%),
+          radial-gradient(1100px 600px at 120% -10%, #e9f0ff 0%, transparent 58%),
+          linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+        font: 14px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        min-height: 100vh;
+      }
+      .wrap {
+        max-width: 1040px;
+        margin: 24px auto 56px;
+        padding: 0 16px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 8px 24px rgba(28, 61, 135, 0.06);
+        animation: riseIn 0.28s ease-out both;
+      }
+      .card:hover {
+        border-color: #c9dbff;
+        box-shadow: 0 12px 28px rgba(28, 61, 135, 0.1);
+      }
+      h1, h2, h3 { margin: 0 0 10px; }
+      h1 { font-size: 28px; color: #0f2347; }
+      h2 { font-size: 19px; margin-top: 10px; color: #17315f; }
+      h3 { font-size: 15px; margin-top: 8px; color: #2a3f66; }
+      p { margin: 8px 0; }
+      ul { margin: 8px 0; padding-left: 18px; }
+      li { margin: 4px 0; }
+      /* 行内 code（不在编辑器里） */
+      :not(pre) > code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        background: var(--primary-soft);
+        border: 1px solid #d6e4ff;
+        color: #20458f;
+        border-radius: 6px;
+        padding: 2px 6px;
+        font-size: 0.92em;
+      }
+      a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      a:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .muted { color: var(--muted); }
+      .grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+      .stats {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        margin-top: 14px;
+      }
+      .stat {
+        background: var(--primary-soft);
+        border: 1px solid #d6e4ff;
+        border-radius: 10px;
+        padding: 12px 14px;
+        text-align: center;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      }
+      a.stat {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+      }
+      a.stat:hover {
+        transform: translateY(-2px);
+        border-color: #9bbcff;
+        box-shadow: 0 8px 20px rgba(47, 107, 255, 0.12);
+      }
+      a.stat:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+      .card[id] {
+        scroll-margin-top: 20px;
+      }
+      .stat-num {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary);
+        line-height: 1.2;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .table-wrap {
+        overflow-x: auto;
+        margin-top: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th, td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: var(--primary-soft);
+        color: #17315f;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      tr:nth-child(even) td {
+        background: #f8fbff;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #eef4ff;
+        border: 1px solid #d6e4ff;
+        color: #3559a8;
+        margin-right: 4px;
+        white-space: nowrap;
+      }
+      .tag-always {
+        background: #e8f5e9;
+        border-color: #c8e6c9;
+        color: #2e7d32;
+      }
+      h3 a {
+        color: inherit;
+        text-decoration: none;
+      }
+      h3 a:hover {
+        color: var(--primary);
+        text-decoration: underline;
+      }
+      .group-title {
+        margin: 16px 0 8px;
+        font-size: 14px;
+        color: #3559a8;
+        font-weight: 600;
+      }
+
+      /* 编辑器窗口 */
+      .editor {
+        margin-top: 12px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #3c3c3c;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+      }
+      .editor-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        background: var(--editor-bar);
+        border-bottom: 1px solid #3c3c3c;
+      }
+      .editor-dots {
+        display: flex;
+        gap: 6px;
+      }
+      .editor-dots span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .editor-dots span:nth-child(1) { background: #ff5f57; }
+      .editor-dots span:nth-child(2) { background: #febc2e; }
+      .editor-dots span:nth-child(3) { background: #28c840; }
+      .editor-title {
+        flex: 1;
+        text-align: center;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 12px;
+        color: #9d9d9d;
+        margin-right: 46px;
+      }
+      .editor-body {
+        background: var(--editor-bg);
+        padding: 14px 0;
+        overflow-x: auto;
+      }
+      .editor-body pre {
+        margin: 0;
+        padding: 0 16px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 13px;
+        line-height: 1.65;
+        color: var(--editor-text);
+        tab-size: 2;
+      }
+      .editor-body code {
+        display: block;
+        background: transparent;
+        border: none;
+        padding: 0;
+        color: inherit;
+        font-size: inherit;
+        white-space: pre;
+      }
+      .editor-body .line {
+        display: block;
+        min-height: 1.65em;
+      }
+      .cmt { color: var(--editor-comment); }
+      .cmd { color: var(--editor-cmd); }
+      .pkg { color: var(--editor-pkg); }
+      .flag { color: var(--editor-flag); }
+      .path { color: var(--editor-path); }
+      .url { color: var(--editor-url); }
+
+      @media (prefers-reduced-motion: reduce) {
+        .card { animation: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="card">
+        <h1>cloudpivot-ecc · Rules & Skills 使用说明</h1>
+        <p class="muted">
+          面向云枢 AI-Platform-v1.1 的协作配置包。用于把 Cursor / Claude Code / VSCode 的规则、
+          skills、hooks 和编辑器配置快速注入目标项目，并保持可升级。
+        </p>
+        <div class="stats">
+          <a class="stat" href="#rules"><div class="stat-num">9</div><div class="stat-label">Rules</div></a>
+          <a class="stat" href="#skills"><div class="stat-num">17</div><div class="stat-label">Skills</div></a>
+          <a class="stat" href="#harness"><div class="stat-num">3</div><div class="stat-label">Harness</div></a>
+          <a class="stat" href="#hooks"><div class="stat-num">15</div><div class="stat-label">Hooks 事件</div></a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>1) 项目情况与定位</h2>
+        <ul>
+          <li>技术栈基线：Vue 2.7 + TypeScript 4.1 + Vuex 3 + Vue Router 3。</li>
+          <li>协作资产：Rules（约束）+ Skills（任务路由）+ Hooks（安全/提交保护）+ IDE 配置。</li>
+          <li>工程规范：语法/安全/性能规则提炼自 <a href="https://github.com/affaan-m/ECC">ECC universal</a>，并适配云枢 Vue2 monorepo。</li>
+          <li>定制策略：默认通用，行业定制可参考 bankcomm 方案，建议走扩展点降低升级成本。</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>2) 快速使用</h2>
+        <div class="editor">
+          <div class="editor-bar">
+            <div class="editor-dots"><span></span><span></span><span></span></div>
+            <div class="editor-title">terminal — bash</div>
+          </div>
+          <div class="editor-body">
+            <pre><code><span class="line"><span class="cmt"># 安装</span></span>
+<span class="line"><span class="pkg">npm</span> <span class="cmd">i</span> <span class="flag">-g</span> <span class="pkg">cloudpivot-ecc</span> <span class="flag">--registry=</span><span class="url">https://nexus01.authine.cn/repository/npm-cloudpivot/</span></span>
+<span class="line"></span>
+<span class="line"><span class="cmt"># 注入到项目（默认 cursor + claude-code + vscode）</span></span>
+<span class="line"><span class="cmd">cecc</span> <span class="cmd">init</span> <span class="path">/path/to/your/project</span></span>
+<span class="line"></span>
+<span class="line"><span class="cmt"># 仅安装某类</span></span>
+<span class="line"><span class="cmd">cecc</span> <span class="cmd">init</span> <span class="path">/path/to/your/project</span> <span class="flag">--harness</span> <span class="path">cursor</span></span>
+<span class="line"></span>
+<span class="line"><span class="cmt"># 冲突策略（默认）</span></span>
+<span class="line"><span class="cmt"># - 同名文件：覆盖</span></span>
+<span class="line"><span class="cmt"># - 同名目录：增量合并</span></span>
+<span class="line"></span>
+<span class="line"><span class="cmt"># 强制先删后装</span></span>
+<span class="line"><span class="cmd">cecc</span> <span class="cmd">init</span> <span class="path">/path/to/your/project</span> <span class="flag">--force</span></span>
+<span class="line"></span>
+<span class="line"><span class="cmt"># 体检、升级、卸载</span></span>
+<span class="line"><span class="cmd">cecc</span> <span class="cmd">doctor</span> <span class="path">/path/to/your/project</span></span>
+<span class="line"><span class="cmd">cecc</span> <span class="cmd">update</span> <span class="path">/path/to/your/project</span></span>
+<span class="line"><span class="cmd">cecc</span> <span class="cmd">uninstall</span> <span class="path">/path/to/your/project</span></span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3) Rules 与 Skills 的作用</h2>
+        <div class="grid">
+          <div>
+            <h3><a href="#rules">Rules（规则）</a></h3>
+            <ul>
+              <li>限制技术栈与改动边界（避免误改产品内核）。</li>
+              <li>约束安全、i18n、Git 流程、包依赖、<strong>性能</strong>策略。</li>
+              <li>共 9 条 <code>.mdc</code>，见下方完整清单。</li>
+            </ul>
+          </div>
+          <div>
+            <h3><a href="#skills">Skills（技能）</a></h3>
+            <ul>
+              <li>按任务意图路由到具体实践文档。</li>
+              <li>覆盖 API、组件、门户、表单、二开、安全、review 等场景。</li>
+              <li>共 17 个 skill，见下方完整清单。</li>
+            </ul>
+          </div>
+          <div>
+            <h3><a href="#harness">Harness（安装包）</a></h3>
+            <ul>
+              <li>按 IDE 分发：Cursor / Claude Code / VSCode。</li>
+              <li>通过 <code>cecc init --harness</code> 选择安装范围。</li>
+              <li>共 3 种 harness，见下方完整清单。</li>
+            </ul>
+          </div>
+          <div>
+            <h3><a href="#hooks">Hooks（自动化）</a></h3>
+            <ul>
+              <li>敏感文件拦截、secret 检测、格式化、提交审计。</li>
+              <li>配置在 <code>hooks.json</code>，脚本从 ECC 拉取。</li>
+              <li>共 15 个事件，见下方完整清单。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="rules">
+        <h2>4) Rules 完整清单（9）</h2>
+        <p class="muted">路径：<code>.cursor/rules/*.mdc</code>（Claude Code 通过 <code>AGENTS.md</code> 索引）</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>文件</th>
+                <th>加载范围</th>
+                <th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>00-cloudpivot-always</code></td>
+                <td><span class="tag tag-always">always</span></td>
+                <td>云枢 monorepo 全局总则：技术栈、修改边界、依赖与版本管理</td>
+              </tr>
+              <tr>
+                <td><code>01-coding-style</code></td>
+                <td><span class="tag">*.ts/js/vue</span></td>
+                <td>TS/JS/Vue 代码风格（ESLint + Prettier）；边界输入校验（提炼 ECC）</td>
+              </tr>
+              <tr>
+                <td><code>02-vue-component</code></td>
+                <td><span class="tag">*.vue</span></td>
+                <td>Vue 2.7 Class Component 写法（vue-property-decorator）</td>
+              </tr>
+              <tr>
+                <td><code>03-security</code></td>
+                <td><span class="tag tag-always">always</span></td>
+                <td>前端安全：XSS、加密、敏感文件、容器 API、安全事件响应（提炼 ECC）</td>
+              </tr>
+              <tr>
+                <td><code>04-git-workflow</code></td>
+                <td><span class="tag tag-always">always</span></td>
+                <td>Git 提交与发布：commitizen、commitlint、lerna publish</td>
+              </tr>
+              <tr>
+                <td><code>05-packages-policy</code></td>
+                <td><span class="tag">packages/**</span></td>
+                <td>各包修改策略：admin / portal / mobile / 公共库 / 设计器</td>
+              </tr>
+              <tr>
+                <td><code>06-bankcomm-extends</code></td>
+                <td><span class="tag">extension-*</span></td>
+                <td>行业定制二开约定（交行实现可参考）：extension-bankcomm、extends/</td>
+              </tr>
+              <tr>
+                <td><code>07-i18n-locale</code></td>
+                <td><span class="tag">ts/vue/js</span></td>
+                <td>国际化：cloudpivot-locale + vue-i18n + i18n-checker</td>
+              </tr>
+              <tr>
+                <td><code>08-frontend-performance</code></td>
+                <td><span class="tag">vue/ts/js/packages</span></td>
+                <td>性能基线：渲染、列表、包体积、构建排错（提炼 ECC）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" id="skills">
+        <h2>5) Skills 完整清单（17）</h2>
+        <p class="muted">路径：<code>.cursor/skills/&lt;name&gt;/SKILL.md</code> 与 <code>.claude/skills/&lt;name&gt;/SKILL.md</code></p>
+
+        <p class="group-title">⭐ 入口 / 必读</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Skill</th><th>何时使用</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>frontend-quickstart</code></td>
+                <td>新人 onboarding、不知道从哪下手、快速做小需求——<strong>第一个读的 skill</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="group-title">📖 项目结构与编码</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Skill</th><th>何时使用</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>cloudpivot-monorepo</code></td>
+                <td>包结构、依赖、启动/构建排错、lerna、resolutions</td>
+              </tr>
+              <tr>
+                <td><code>vue2-class-component</code></td>
+                <td>新建/重构 .vue 组件、Class Component 写法</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="group-title">🔧 复用资产速查</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Skill</th><th>何时使用</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>cloudpivot-apis</code></td>
+                <td>30+ API 实例速查、调后端、SSE/加密/cookie 模式</td>
+              </tr>
+              <tr>
+                <td><code>cloudpivot-utils-reference</code></td>
+                <td>64 个工具函数速查：日期、加密、地图、URL、校验、业务工具</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="group-title">🧩 二开（按场景）</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Skill</th><th>何时使用</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>form-component-extension</code></td>
+                <td>表单控件四件套：info / schema / conduct / components</td>
+              </tr>
+              <tr>
+                <td><code>portal-extension</code></td>
+                <td>门户 widget、流程菜单、工作流节点、消息、iframe 嵌入</td>
+              </tr>
+              <tr>
+                <td><code>bankcomm-extension</code></td>
+                <td>行业定制决策树与版本管理（交行实现为参考）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="group-title">📋 通用工程</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Skill</th><th>何时使用</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>i18n-locale</code></td>
+                <td>文案国际化、key 命名、pre-commit i18n-checker</td>
+              </tr>
+              <tr>
+                <td><code>frontend-security-review</code></td>
+                <td>提交前/合并前安全审查：XSS、token、加密、容器 API</td>
+              </tr>
+              <tr>
+                <td><code>frontend-performance</code></td>
+                <td>列表卡顿、包体积、构建 OOM、公共库改动不生效</td>
+              </tr>
+              <tr>
+                <td><code>code-review-checklist</code></td>
+                <td>完整 12 节 Code Review 自检与 PR review</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="group-title">🏢 企业工程治理</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Skill</th><th>何时使用</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>frontend-release-management</code></td>
+                <td>发版、回滚、publish:custom、publish:custom:all、resolutions 版本治理</td>
+              </tr>
+              <tr>
+                <td><code>frontend-dependency-governance</code></td>
+                <td>依赖、安全、license、Nexus 私服、供应链风险</td>
+              </tr>
+              <tr>
+                <td><code>frontend-observability</code></td>
+                <td>错误监控、性能指标、白屏、API 慢请求、sourcemap、PII 脱敏</td>
+              </tr>
+              <tr>
+                <td><code>architecture-review</code></td>
+                <td>ADR、二开方案、公共库抽取、跨端复用、禁止修改文件例外流程</td>
+              </tr>
+              <tr>
+                <td><code>ai-collaboration-governance</code></td>
+                <td>AI 协作规范、AI Review、敏感信息、变更摘要、MR 规范</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" id="harness">
+        <h2>6) Harness 完整清单（3）</h2>
+        <p class="muted">通过 <code>cecc init --harness &lt;name&gt;</code> 选择安装；默认 <code>all</code> 安装 cursor + claude-code + vscode。</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Harness</th>
+                <th>目标 IDE / 工具</th>
+                <th>安装内容</th>
+                <th>安装命令示例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>cursor</code></td>
+                <td>Cursor IDE</td>
+                <td>
+                  <code>.cursor/rules/</code>（9 条）<br />
+                  <code>.cursor/skills/</code>（17 个）<br />
+                  <code>.cursor/hooks.json</code>
+                </td>
+                <td><code>cecc init . --harness cursor</code></td>
+              </tr>
+              <tr>
+                <td><code>claude-code</code></td>
+                <td>Claude Code / Codex / OpenCode</td>
+                <td>
+                  <code>.claude/skills/</code>（17 个）<br />
+                  <code>AGENTS.md</code>、<code>CLAUDE.md</code>
+                </td>
+                <td><code>cecc init . --harness claude-code</code></td>
+              </tr>
+              <tr>
+                <td><code>vscode</code></td>
+                <td>VSCode + Copilot</td>
+                <td>
+                  <code>.vscode/settings.json</code><br />
+                  <code>.vscode/extensions.json</code><br />
+                  <code>.github/copilot-instructions.md</code><br />
+                  <code>.editorconfig</code>
+                </td>
+                <td><code>cecc init . --harness vscode</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted" style="margin-top:12px">
+          Hook 脚本（<code>.cursor/hooks/*.js</code>）需额外参数：
+          <code>cecc init . --with-hooks --ecc-path ~/gitlab/ECC</code>
+        </p>
+      </section>
+
+      <section class="card" id="hooks">
+        <h2>7) Hooks 事件清单（15）</h2>
+        <p class="muted">
+          配置文件：<code>.cursor/hooks.json</code>（1 个）· 脚本来源：ECC 仓库
+          <code>.cursor/hooks/*.js</code>（需 <code>--with-hooks</code> 拉取）
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>事件</th>
+                <th>脚本 / 命令</th>
+                <th>作用</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>sessionStart</code></td><td><code>session-start.js</code></td><td>加载上次上下文 &amp; 检测环境</td></tr>
+              <tr><td><code>sessionEnd</code></td><td><code>session-end.js</code></td><td>持久化会话状态</td></tr>
+              <tr><td><code>beforeShellExecution</code></td><td><code>block-no-verify</code> + <code>before-shell-execution.js</code></td><td>拦截 <code>--no-verify</code>；tmux / git push review</td></tr>
+              <tr><td><code>afterShellExecution</code></td><td><code>after-shell-execution.js</code></td><td>PR URL 记录、构建结果分析</td></tr>
+              <tr><td><code>afterFileEdit</code></td><td><code>after-file-edit.js</code></td><td>自动格式化、TS 检查、console.log 警告</td></tr>
+              <tr><td><code>beforeMCPExecution</code></td><td><code>before-mcp-execution.js</code></td><td>MCP 调用审计与不可信服务器告警</td></tr>
+              <tr><td><code>afterMCPExecution</code></td><td><code>after-mcp-execution.js</code></td><td>MCP 结果记录</td></tr>
+              <tr><td><code>beforeReadFile</code></td><td><code>before-read-file.js</code></td><td>拦截 .env / .key / dev-token.js / proxy.local.js 等</td></tr>
+              <tr><td><code>beforeSubmitPrompt</code></td><td><code>before-submit-prompt.js</code></td><td>拦截 prompt 中的 sk- / ghp_ / AKIA / Bearer 等 secret</td></tr>
+              <tr><td><code>subagentStart</code></td><td><code>subagent-start.js</code></td><td>子 agent 启动日志</td></tr>
+              <tr><td><code>subagentStop</code></td><td><code>subagent-stop.js</code></td><td>子 agent 完成日志</td></tr>
+              <tr><td><code>beforeTabFileRead</code></td><td><code>before-tab-file-read.js</code></td><td>Tab 补全读文件时拦截敏感文件</td></tr>
+              <tr><td><code>afterTabFileEdit</code></td><td><code>after-tab-file-edit.js</code></td><td>Tab 编辑后自动格式化</td></tr>
+              <tr><td><code>preCompact</code></td><td><code>pre-compact.js</code></td><td>上下文压缩前保存状态</td></tr>
+              <tr><td><code>stop</code></td><td><code>stop.js</code></td><td>提交前对所有修改文件做 console.log 审计</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>8) 任务 → Skill 路由速查</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>我要做的事</th><th>主 Skill</th><th>配套</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>新人 / 不知道从哪下手</td><td><code>frontend-quickstart</code></td><td>—</td></tr>
+              <tr><td>页面加按钮 / 改样式</td><td><code>vue2-class-component</code></td><td><code>cloudpivot-utils-reference</code> + <code>i18n-locale</code></td></tr>
+              <tr><td>调一个新后端接口</td><td><code>cloudpivot-apis</code></td><td><code>cloudpivot-utils-reference</code></td></tr>
+              <tr><td>加表单自定义控件</td><td><code>form-component-extension</code></td><td><code>vue2-class-component</code> + <code>i18n-locale</code></td></tr>
+              <tr><td>门户加 widget / 卡片</td><td><code>portal-extension</code></td><td><code>vue2-class-component</code></td></tr>
+              <tr><td>流程中心 / 工作流 / 消息扩展</td><td><code>portal-extension</code></td><td>—</td></tr>
+              <tr><td>行业/项目定制（参考交行）</td><td><code>bankcomm-extension</code></td><td>对应二开 skill</td></tr>
+              <tr><td>启动/构建失败、找包</td><td><code>cloudpivot-monorepo</code></td><td>—</td></tr>
+              <tr><td>文案国际化</td><td><code>i18n-locale</code></td><td>—</td></tr>
+              <tr><td>提交前自检 / Review</td><td><code>code-review-checklist</code></td><td><code>frontend-security-review</code></td></tr>
+              <tr><td>性能 / 列表卡顿 / 包变大</td><td><code>frontend-performance</code></td><td><code>cloudpivot-monorepo</code></td></tr>
+              <tr><td>发版 / 回滚 / 定制包发布</td><td><code>frontend-release-management</code></td><td><code>frontend-dependency-governance</code></td></tr>
+              <tr><td>新增依赖 / license / 私服包</td><td><code>frontend-dependency-governance</code></td><td><code>frontend-security-review</code></td></tr>
+              <tr><td>线上报错 / sourcemap / 埋点</td><td><code>frontend-observability</code></td><td><code>frontend-security-review</code></td></tr>
+              <tr><td>架构评审 / ADR / 公共库抽取</td><td><code>architecture-review</code></td><td><code>cloudpivot-monorepo</code></td></tr>
+              <tr><td>AI 协作规范 / AI Review</td><td><code>ai-collaboration-governance</code></td><td><code>code-review-checklist</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>9) 常用操作指令</h2>
+        <div class="editor">
+          <div class="editor-bar">
+            <div class="editor-dots"><span></span><span></span><span></span></div>
+            <div class="editor-title">terminal — bash</div>
+          </div>
+          <div class="editor-body">
+            <pre><code><span class="line"><span class="cmt"># 列出可安装项</span></span>
+<span class="line"><span class="cmd">cecc</span> <span class="cmd">list</span></span>
+<span class="line"></span>
+<span class="line"><span class="cmt"># 干跑（只看将执行操作）</span></span>
+<span class="line"><span class="cmd">cecc</span> <span class="cmd">init</span> <span class="path">.</span> <span class="flag">--dry-run</span></span>
+<span class="line"></span>
+<span class="line"><span class="cmt"># 带 hooks 安装</span></span>
+<span class="line"><span class="cmd">cecc</span> <span class="cmd">init</span> <span class="path">.</span> <span class="flag">--with-hooks</span> <span class="flag">--ecc-path</span> <span class="path">~/gitlab/ECC</span></span>
+<span class="line"></span>
+<span class="line"><span class="cmt"># 仅恢复备份场景卸载</span></span>
+<span class="line"><span class="cmd">cecc</span> <span class="cmd">uninstall</span> <span class="path">.</span> <span class="flag">--restore</span></span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>10) V1.1 与二开参考文档</h2>
+        <ul>
+          <li>开发手册（AI-Platform-v1.1.0）：<a href="https://www.yuque.com/skwme4/epaofp" target="_blank" rel="noopener noreferrer">https://www.yuque.com/skwme4/epaofp</a></li>
+          <li>用户手册（企业AI平台V1.1版本）：<a href="https://www.yuque.com/skwme4/ug602v" target="_blank" rel="noopener noreferrer">https://www.yuque.com/skwme4/ug602v</a></li>
+          <li>本地二次开发扩展点清单：<a href="https://www.yuque.com/skwme4/hzo079/rng0nsn2id5ytmpx#auSb" target="_blank" rel="noopener noreferrer">https://www.yuque.com/skwme4/hzo079/rng0nsn2id5ytmpx#auSb</a></li>
+          <li>表单设计器组件二开规范：<a href="https://www.yuque.com/skwme4/hzo079/fpp74xkerevwd15u" target="_blank" rel="noopener noreferrer">https://www.yuque.com/skwme4/hzo079/fpp74xkerevwd15u</a></li>
+          <li>页面/门户设计器组件二开规范：<a href="https://www.yuque.com/skwme4/hzo079/sb66y4xmtgho045l?singleDoc#" target="_blank" rel="noopener noreferrer">https://www.yuque.com/skwme4/hzo079/sb66y4xmtgho045l?singleDoc#</a></li>
+          <li>云枢前端升级 Git 五步合并手册：<a href="https://authine.yuque.com/dcd9g7/sd0ugx/sw55rom4pg4zl5ln?singleDoc#" target="_blank" rel="noopener noreferrer">https://authine.yuque.com/dcd9g7/sd0ugx/sw55rom4pg4zl5ln?singleDoc#</a>（密码：<code>vmk7</code>）</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
